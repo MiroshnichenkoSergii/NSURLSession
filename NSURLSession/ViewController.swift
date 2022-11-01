@@ -7,6 +7,7 @@
 
 import UIKit
 import WebKit
+import Kanna
 
 class ViewController: UIViewController {
 
@@ -16,17 +17,29 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         displayURL()
     }
     
     // Review for displayURL method
     func displayURL() {
-        guard let myURL = URL(string: myURLAdress) else { return }
-        let myData = try! Data(contentsOf: myURL)
-        let myHTMLString = String(data: myData, encoding: String.Encoding.utf8)
-        print(myHTMLString!)
-        myWebView.load(URLRequest(url: myURL))
+        guard let myURL = NSURL(string: myURLAdress) else { return }
+
+        if let myHTMLString = try? String(contentsOf: myURL as URL, encoding: .ascii) {
+            print(myHTMLString)
+            
+            if let doc = try? HTML(html: myHTMLString, encoding: .utf8) {
+
+                // Search for nodes by XPath
+                for link in doc.xpath("//a | //link") {
+                    print(link["href"]!)
+                }
+            }
+            
+        } else {
+            print("Error")
+        }
+
+        myWebView.load(URLRequest(url: myURL as URL))
     }
     
     // Try review old variant (it works but without images in load)
