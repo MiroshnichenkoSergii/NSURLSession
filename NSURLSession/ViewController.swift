@@ -6,12 +6,35 @@
 //
 
 import UIKit
+import WebKit
 
 class ViewController: UIViewController {
 
+    @IBOutlet var myWebView: WKWebView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        displayURL()
+    }
+    
+    // Try review old variant (it works but without images in load)
+    func displayURL() {
+        let myURLAdress = "http://www.google.com/"
+        let myURL = NSURL(string: myURLAdress)
+        let URLTask = URLSession(configuration: .default).dataTask(with: myURL! as URL) { myData, response, error in
+
+            guard error == nil else { return }
+
+            let myHTMLString = String(data: myData!, encoding: String.Encoding.utf8)
+
+            DispatchQueue.main.async {
+                self.myWebView.loadHTMLString(myHTMLString!, baseURL: nil)
+            }
+
+            print(myHTMLString!)
+        }
+        URLTask.resume()
     }
 
 
